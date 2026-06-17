@@ -185,9 +185,10 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="厅房使用率"
-          value={`${Math.round((halls.filter(h => h.status === '使用中' || h.status === '已预约').length / halls.length * 100)}%`}
+          value={halls.length > 0 ? `${Math.round((halls.filter(h => h.status === '使用中' || h.status === '已预约').length / halls.length * 100)}%` : '0%'}
           icon={Building2}
           color="green"
+          subtitle={`共 ${halls.length} 个厅房`}
         />
         <StatCard
           title="在岗人员"

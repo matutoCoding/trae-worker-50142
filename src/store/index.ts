@@ -107,18 +107,34 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'funeral-service-storage',
       partialize: (state) => ({
+        currentUser: state.currentUser,
         transportOrders: state.transportOrders,
         hallBookings: state.hallBookings,
+        halls: state.halls,
         cremationSchedules: state.cremationSchedules,
+        furnaces: state.furnaces,
         ashStorages: state.ashStorages,
         storageUnits: state.storageUnits,
         supplies: state.supplies,
         suppliesUsages: state.suppliesUsages,
         payments: state.payments,
+        staffs: state.staffs,
         deceasedList: state.deceasedList,
         familyList: state.familyList,
         schedules: state.schedules,
+        subsidies: state.subsidies,
       }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<typeof currentState>;
+        return {
+          ...currentState,
+          ...persisted,
+          halls: persisted.halls && persisted.halls.length > 0 ? persisted.halls : currentState.halls,
+          staffs: persisted.staffs && persisted.staffs.length > 0 ? persisted.staffs : currentState.staffs,
+          furnaces: persisted.furnaces && persisted.furnaces.length > 0 ? persisted.furnaces : currentState.furnaces,
+          subsidies: persisted.subsidies && persisted.subsidies.length > 0 ? persisted.subsidies : currentState.subsidies,
+        };
+      },
     }
   )
 );
