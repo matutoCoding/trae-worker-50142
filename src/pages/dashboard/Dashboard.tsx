@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
       id: 1,
       title: '待派车订单',
       count: pendingTransport.length,
-      description: `${pendingTransport.length} 个订单等待派车',
+      description: `${pendingTransport.length} 个订单等待派车`,
       icon: Truck,
       color: 'yellow',
       link: '/transport',
@@ -133,7 +133,7 @@ const Dashboard: React.FC = () => {
       id: 2,
       title: '今日火化',
       count: todayCremation.length,
-      description: `${todayCremation.length} 个火化安排',
+      description: `${todayCremation.length} 个火化安排`,
       icon: Flame,
       color: 'orange',
       link: '/cremation',
@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
       id: 3,
       title: '寄存到期',
       count: expiringSoon.length,
-      description: `${expiringSoon.length} 个寄存即将到期',
+      description: `${expiringSoon.length} 个寄存即将到期`,
       icon: AlertTriangle,
       color: 'red',
       link: '/storage',
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
       id: 4,
       title: '待收费',
       count: pendingPayment.length,
-      description: `${pendingPayment.length} 笔费用待收取',
+      description: `${pendingPayment.length} 笔费用待收取`,
       icon: DollarSign,
       color: 'purple',
       link: '/settlement',
@@ -326,7 +326,7 @@ const Dashboard: React.FC = () => {
               <LineChart data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="month" fontSize={12} stroke="#64748B" />
-                <YAxis fontSize={12} stroke="#64748B" tickFormatter={(value) => `${value / 10000}万" />
+                <YAxis fontSize={12} stroke="#64748B" tickFormatter={(value) => `${value / 10000}万`} />
                 <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                 <Line
                   type="monotone"
@@ -363,7 +363,7 @@ const Dashboard: React.FC = () => {
               <div className="text-sm text-gray-500 space-y-1">
                 <p className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                {formatDateTime(booking.startTime)} - {formatDateTime(booking.endTime, 'HH:mm')}
+                {formatDateTime(booking.startTime)} - {booking.endTime.slice(11, 16)}
                 </p>
                 <p className="flex items-center gap-2">
                 <Users className="w-4 h-4" />

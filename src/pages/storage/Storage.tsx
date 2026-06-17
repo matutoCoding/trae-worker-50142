@@ -151,10 +151,10 @@ const Storage: React.FC = () => {
 
   const getUnitStatusColor = (status: UnitStatus) => {
     switch (status) {
-      case '空闲': return 'bg-success';
-      case '已占用': return 'bg-primary';
-      case '维修中': return 'bg-danger';
-      case '已预留': return 'bg-warning';
+      case '空闲': return 'bg-success-500';
+      case '已占用': return 'bg-primary-500';
+      case '维修中': return 'bg-danger-500';
+      case '已预留': return 'bg-warning-500';
       default: return 'bg-gray-400';
     }
   };
@@ -207,7 +207,7 @@ const Storage: React.FC = () => {
           <div className="flex items-center gap-2">
             <StatusBadge status={row.status} />
             {isExpiring && row.status === '有效' && (
-              <div className="flex items-center gap-1 text-warning text-xs">
+              <div className="flex items-center gap-1 text-warning-600 text-xs">
                 <Bell size={12} />
                 即将到期
               </div>
@@ -240,14 +240,14 @@ const Storage: React.FC = () => {
                   setSelectedStorage(row);
                   setShowRenewModal(true);
                 }}
-                className="flex items-center gap-1 px-3 py-1 text-xs bg-accent text-white rounded hover:bg-accent/90"
+                className="flex items-center gap-1 px-3 py-1 text-xs bg-accent-600 text-white rounded hover:bg-accent-700"
               >
                 <RefreshCw size={12} />
                 续费
               </button>
               <button
                 onClick={() => handleTakeOut(row)}
-                className="flex items-center gap-1 px-3 py-1 text-xs bg-danger text-white rounded hover:bg-danger/90"
+                className="flex items-center gap-1 px-3 py-1 text-xs bg-danger-600 text-white rounded hover:bg-danger-700"
               >
                 <XCircle size={12} />
                 取出
@@ -337,13 +337,13 @@ const Storage: React.FC = () => {
       />
 
       {expiringSoonCount > 0 && (
-        <div className="flex items-center gap-3 p-4 bg-warning/10 border border-warning/30 rounded-lg">
-          <AlertTriangle className="text-warning" size={24} />
+        <div className="flex items-center gap-3 p-4 bg-warning-50 border border-warning-500 rounded-lg">
+          <AlertTriangle className="text-warning-600" size={24} />
           <div>
-            <p className="font-medium text-warning">寄存到期提醒</p>
+            <p className="font-medium text-warning-600">寄存到期提醒</p>
             <p className="text-sm text-gray-600">
-              有 <span className="font-bold text-warning">{expiringSoonCount}</span> 个寄存格位将在30天内到期，
-              有 <span className="font-bold text-danger">{expiredCount}</span> 个寄存已过期，请及时处理。
+              有 <span className="font-bold text-warning-600">{expiringSoonCount}</span> 个寄存格位将在30天内到期，
+              有 <span className="font-bold text-danger-600">{expiredCount}</span> 个寄存已过期，请及时处理。
             </p>
           </div>
         </div>
@@ -385,7 +385,7 @@ const Storage: React.FC = () => {
           onClick={() => setActiveTab('records')}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             activeTab === 'records'
-              ? 'bg-primary text-white'
+              ? 'bg-primary-800 text-white'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
           }`}
         >
@@ -398,7 +398,7 @@ const Storage: React.FC = () => {
           onClick={() => setActiveTab('units')}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             activeTab === 'units'
-              ? 'bg-primary text-white'
+              ? 'bg-primary-800 text-white'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
           }`}
         >
@@ -489,11 +489,11 @@ const Storage: React.FC = () => {
                         key={unit.id}
                         onClick={() => setSelectedUnit(unit)}
                         className={`aspect-square flex items-center justify-center rounded cursor-pointer text-xs font-medium transition-all hover:scale-105 ${
-                          unit.status === '空闲' ? 'bg-success/20 text-success hover:bg-success/30' :
-                          unit.status === '已占用' ? 'bg-primary/20 text-primary hover:bg-primary/30' :
-                          unit.status === '维修中' ? 'bg-danger/20 text-danger hover:bg-danger/30' :
-                          'bg-warning/20 text-warning hover:bg-warning/30'
-                        } ${selectedUnit?.id === unit.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                          unit.status === '空闲' ? 'bg-success-50 text-success-600 hover:bg-success-100 border border-success-500' :
+                          unit.status === '已占用' ? 'bg-primary-50 text-primary-700-700 hover:bg-primary-100 border border-primary-500' :
+                          unit.status === '维修中' ? 'bg-danger-50 text-danger-600 hover:bg-danger-100 border border-danger-500' :
+                          'bg-warning-50 text-warning-600-600 hover:bg-warning-100 border border-warning-500'
+                        } ${selectedUnit?.id === unit.id ? 'ring-2 ring-primary-600 ring-offset-2' : ''}`}
                         title={`${unit.location} - ${unit.type} - ${unit.status}`}
                       >
                         {unit.row}-{unit.col}
@@ -506,19 +506,19 @@ const Storage: React.FC = () => {
 
             <div className="flex items-center justify-center gap-6 mb-6">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-success/20 border border-success" />
+                <div className="w-4 h-4 rounded bg-success-50 border border-success-500" />
                 <span className="text-sm">空闲</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-primary/20 border border-primary" />
+                <div className="w-4 h-4 rounded bg-primary-50 border border-primary-500" />
                 <span className="text-sm">已占用</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-warning/20 border border-warning" />
+                <div className="w-4 h-4 rounded bg-warning-50 border border-warning-500" />
                 <span className="text-sm">已预留</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-danger/20 border border-danger" />
+                <div className="w-4 h-4 rounded bg-danger-50 border border-danger-500" />
                 <span className="text-sm">维修中</span>
               </div>
             </div>
@@ -571,7 +571,7 @@ const Storage: React.FC = () => {
                                 setShowDetailModal(true);
                                 setSelectedUnit(null);
                               }}
-                              className="text-primary text-sm hover:underline"
+                              className="text-primary-700 text-sm hover:underline"
                             >
                               查看详情
                             </button>
@@ -603,7 +603,7 @@ const Storage: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                关联订单 <span className="text-danger">*</span>
+                关联订单 <span className="text-danger-600">*</span>
               </label>
               <select
                 value={formData.orderId}
@@ -624,7 +624,7 @@ const Storage: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                格位 <span className="text-danger">*</span>
+                格位 <span className="text-danger-600">*</span>
               </label>
               <select
                 value={formData.unitId}
@@ -644,7 +644,7 @@ const Storage: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                开始日期 <span className="text-danger">*</span>
+                开始日期 <span className="text-danger-600">*</span>
               </label>
               <input
                 type="date"
@@ -656,7 +656,7 @@ const Storage: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                到期日期 <span className="text-danger">*</span>
+                到期日期 <span className="text-danger-600">*</span>
               </label>
               <input
                 type="date"
@@ -728,7 +728,7 @@ const Storage: React.FC = () => {
                     onClick={() => setRenewYears(years)}
                     className={`flex-1 py-2 rounded border-2 font-medium transition-colors ${
                       renewYears === years
-                        ? 'border-primary bg-primary/10 text-primary'
+                        ? 'border-primary-500 bg-primary-100 text-primary-700-700'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -737,10 +737,10 @@ const Storage: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+            <div className="p-4 rounded-lg bg-primary-50 border border-primary-200">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">续费金额</span>
-                <span className="text-xl font-bold text-primary">
+                <span className="text-xl font-bold text-primary-700">
                   {formatCurrency(
                     (storageUnits.find(u => u.id === selectedStorage.unitId)?.annualFee || 0) * renewYears
                   )}
@@ -805,7 +805,7 @@ const Storage: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">到期日期</p>
-                <p className={`font-medium ${isExpiringSoon(selectedStorage.endDate, 30) ? 'text-warning' : ''}`}>
+                <p className={`font-medium ${isExpiringSoon(selectedStorage.endDate, 30) ? 'text-warning-600' : ''}`}>
                   {formatDate(selectedStorage.endDate)}
                 </p>
               </div>
@@ -844,7 +844,7 @@ const Storage: React.FC = () => {
                   </button>
                   <button
                     onClick={() => handleTakeOut(selectedStorage)}
-                    className="btn-outline text-danger border-danger hover:bg-danger/5"
+                    className="btn-outline text-danger-600 border-danger-500 hover:bg-danger-50"
                   >
                     取出骨灰
                   </button>

@@ -8,7 +8,7 @@ import StatCard from '@/components/ui/StatCard';
 import { useAppStore } from '@/store';
 import { formatDateTime, formatDate, getNow, getToday } from '@/utils/dateUtils';
 import { formatCurrency, generateId } from '@/utils/formatUtils';
-import { Payment, PaymentItem, PaymentItemType, Subsidy } from '@/types';
+import { Payment, PaymentItem } from '@/types';
 
 const Settlement: React.FC = () => {
   const { payments, subsidies, transportOrders, deceasedList, hallBookings, cremationSchedules, ashStorages, suppliesUsages, addPayment, staffs, currentUser } = useAppStore();
@@ -237,10 +237,10 @@ const Settlement: React.FC = () => {
         <div className="text-sm">
           <p>总金额: {formatCurrency(row.totalAmount)}</p>
           {row.subsidyAmount > 0 && (
-            <p className="text-success">补贴: -{formatCurrency(row.subsidyAmount)}</p>
+            <p className="text-success-600">补贴: -{formatCurrency(row.subsidyAmount)}</p>
           )}
           {row.discountAmount > 0 && (
-            <p className="text-warning">优惠: -{formatCurrency(row.discountAmount)}</p>
+            <p className="text-warning-600">优惠: -{formatCurrency(row.discountAmount)}</p>
           )}
         </div>
       ),
@@ -249,7 +249,7 @@ const Settlement: React.FC = () => {
       key: 'actualAmount',
       header: '实收金额',
       render: (row: Payment) => (
-        <span className="text-lg font-bold text-primary">{formatCurrency(row.actualAmount)}</span>
+        <span className="text-lg font-bold text-primary-700">{formatCurrency(row.actualAmount)}</span>
       ),
     },
     {
@@ -282,7 +282,7 @@ const Settlement: React.FC = () => {
               setSelectedPayment(row);
               setShowDetailModal(true);
             }}
-            className="flex items-center gap-1 px-3 py-1 text-xs text-primary border border-primary rounded hover:bg-primary/5"
+            className="flex items-center gap-1 px-3 py-1 text-xs text-primary-700 border border-primary-500 rounded hover:bg-primary-800-50"
           >
             <Eye size={12} />
             详情
@@ -354,7 +354,7 @@ const Settlement: React.FC = () => {
           onClick={() => setActiveTab('payments')}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             activeTab === 'payments'
-              ? 'bg-primary text-white'
+              ? 'bg-primary-800 text-white'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
           }`}
         >
@@ -367,7 +367,7 @@ const Settlement: React.FC = () => {
           onClick={() => setActiveTab('subsidies')}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             activeTab === 'subsidies'
-              ? 'bg-primary text-white'
+              ? 'bg-primary-800 text-white'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
           }`}
         >
@@ -380,7 +380,7 @@ const Settlement: React.FC = () => {
           onClick={() => setActiveTab('archives')}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             activeTab === 'archives'
-              ? 'bg-primary text-white'
+              ? 'bg-primary-800 text-white'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
           }`}
         >
@@ -437,14 +437,14 @@ const Settlement: React.FC = () => {
               {subsidies.filter(s => s.enabled).map(subsidy => (
                 <div
                   key={subsidy.id}
-                  className="p-4 rounded-lg border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors"
+                  className="p-4 rounded-lg border border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-colors"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h4 className="font-semibold">{subsidy.name}</h4>
                       <span className="text-xs text-gray-500">{subsidy.type}</span>
                     </div>
-                    <span className="text-2xl font-bold text-success">
+                    <span className="text-2xl font-bold text-success-600">
                       {formatCurrency(subsidy.amount)}
                     </span>
                   </div>
@@ -497,12 +497,12 @@ const Settlement: React.FC = () => {
                   return (
                     <div
                       key={order.id}
-                      className="p-4 rounded-lg border border-gray-200 hover:border-primary/30 transition-colors"
+                      className="p-4 rounded-lg border border-gray-200 hover:border-primary-500 transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                            <User size={24} className="text-primary" />
+                          <div className="w-12 h-12 rounded-full bg-primary-800-100 flex items-center justify-center">
+                            <User size={24} className="text-primary-700" />
                           </div>
                           <div>
                             <h4 className="font-semibold">{deceased?.name || '未知'}</h4>
@@ -518,7 +518,7 @@ const Settlement: React.FC = () => {
                           <div className="text-right">
                             <StatusBadge status={order.status} />
                             {payment && (
-                              <p className="text-sm text-success mt-1">
+                              <p className="text-sm text-success-600 mt-1">
                                 已结算: {formatCurrency(payment.actualAmount)}
                               </p>
                             )}
@@ -529,7 +529,7 @@ const Settlement: React.FC = () => {
                               setSelectedOrderId(order.id);
                               setShowArchiveModal(true);
                             }}
-                            className="flex items-center gap-1 px-4 py-2 text-sm text-primary border border-primary rounded hover:bg-primary/5"
+                            className="flex items-center gap-1 px-4 py-2 text-sm text-primary-700 border border-primary-500 rounded hover:bg-primary-800-50"
                           >
                             <FileText size={16} />
                             查看档案
@@ -557,7 +557,7 @@ const Settlement: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              选择订单 <span className="text-danger">*</span>
+              选择订单 <span className="text-danger-600">*</span>
             </label>
             <select
               value={formData.orderId}
@@ -621,7 +621,7 @@ const Settlement: React.FC = () => {
                       key={subsidy.id}
                       className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                         formData.subsidyIds.includes(subsidy.id)
-                          ? 'border-success bg-success/5'
+                          ? 'border-success-500 bg-success-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
@@ -635,7 +635,7 @@ const Settlement: React.FC = () => {
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
                             <h5 className="font-medium">{subsidy.name}</h5>
-                            <span className="text-success font-bold">{formatCurrency(subsidy.amount)}</span>
+                            <span className="text-success-600 font-bold">{formatCurrency(subsidy.amount)}</span>
                           </div>
                           <p className="text-xs text-gray-500 mt-1">{subsidy.conditions}</p>
                         </div>
@@ -664,7 +664,7 @@ const Settlement: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    支付方式 <span className="text-danger">*</span>
+                    支付方式 <span className="text-danger-600">*</span>
                   </label>
                   <select
                     value={formData.paymentMethod}
@@ -681,7 +681,7 @@ const Settlement: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-6 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="p-6 rounded-lg bg-primary-800-50 border border-primary-500-200">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">总金额</span>
@@ -689,20 +689,20 @@ const Settlement: React.FC = () => {
                   </div>
                   {selectedSubsidyAmount > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-success">补贴减免</span>
-                      <span className="text-success">-{formatCurrency(selectedSubsidyAmount)}</span>
+                      <span className="text-success-600">补贴减免</span>
+                      <span className="text-success-600">-{formatCurrency(selectedSubsidyAmount)}</span>
                     </div>
                   )}
                   {formData.discountAmount > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-warning">优惠减免</span>
-                      <span className="text-warning">-{formatCurrency(formData.discountAmount)}</span>
+                      <span className="text-warning-600">优惠减免</span>
+                      <span className="text-warning-600">-{formatCurrency(formData.discountAmount)}</span>
                     </div>
                   )}
-                  <div className="border-t border-primary/20 pt-2 mt-2">
+                  <div className="border-t border-primary-500-200 pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">应收金额</span>
-                      <span className="text-2xl font-bold text-primary">{formatCurrency(Math.max(0, finalAmount))}</span>
+                      <span className="text-2xl font-bold text-primary-700">{formatCurrency(Math.max(0, finalAmount))}</span>
                     </div>
                   </div>
                 </div>
@@ -795,7 +795,7 @@ const Settlement: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-6 rounded-lg bg-primary/5 border border-primary/20">
+            <div className="p-6 rounded-lg bg-primary-800-50 border border-primary-500-200">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">总金额</span>
@@ -803,20 +803,20 @@ const Settlement: React.FC = () => {
                 </div>
                 {selectedPayment.subsidyAmount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-success">补贴减免</span>
-                    <span className="text-success">-{formatCurrency(selectedPayment.subsidyAmount)}</span>
+                    <span className="text-success-600">补贴减免</span>
+                    <span className="text-success-600">-{formatCurrency(selectedPayment.subsidyAmount)}</span>
                   </div>
                 )}
                 {selectedPayment.discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-warning">优惠减免</span>
-                    <span className="text-warning">-{formatCurrency(selectedPayment.discountAmount)}</span>
+                    <span className="text-warning-600">优惠减免</span>
+                    <span className="text-warning-600">-{formatCurrency(selectedPayment.discountAmount)}</span>
                   </div>
                 )}
-                <div className="border-t border-primary/20 pt-2 mt-2">
+                <div className="border-t border-primary-500-200 pt-2 mt-2">
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">实收金额</span>
-                    <span className="text-2xl font-bold text-primary">{formatCurrency(selectedPayment.actualAmount)}</span>
+                    <span className="text-2xl font-bold text-primary-700">{formatCurrency(selectedPayment.actualAmount)}</span>
                   </div>
                 </div>
               </div>
@@ -891,14 +891,14 @@ const Settlement: React.FC = () => {
               return (
                 <>
                   <div className="p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
-                    <h3 className="text-xl font-bold text-primary mb-2">治丧档案</h3>
+                    <h3 className="text-xl font-bold text-primary-700 mb-2">治丧档案</h3>
                     <p className="text-gray-600">档案编号: {order?.orderNo}</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="card p-4">
                       <h4 className="font-semibold mb-3 flex items-center gap-2">
-                        <User size={18} className="text-primary" />
+                        <User size={18} className="text-primary-700" />
                         逝者信息
                       </h4>
                       <div className="space-y-2 text-sm">
@@ -937,7 +937,7 @@ const Settlement: React.FC = () => {
 
                     <div className="card p-4">
                       <h4 className="font-semibold mb-3 flex items-center gap-2">
-                        <User size={18} className="text-primary" />
+                        <User size={18} className="text-primary-700" />
                         家属信息
                       </h4>
                       <div className="space-y-2 text-sm">
@@ -967,12 +967,12 @@ const Settlement: React.FC = () => {
 
                   <div className="card p-4">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Clock size={18} className="text-primary" />
+                      <Clock size={18} className="text-primary-700" />
                       服务流程
                     </h4>
                     <div className="relative pl-6 space-y-4">
                       <div className="relative">
-                        <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-success" />
+                        <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-success-500" />
                         <div className="flex justify-between">
                           <div>
                             <p className="font-medium">遗体接运</p>
@@ -990,7 +990,7 @@ const Settlement: React.FC = () => {
 
                       {booking && (
                         <div className="relative">
-                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-primary" />
+                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-primary-800" />
                           <div className="w-0.5 h-full absolute -left-[21px] top-6 bg-gray-200" />
                           <div className="flex justify-between">
                             <div>
@@ -1010,14 +1010,14 @@ const Settlement: React.FC = () => {
 
                       {cremation && (
                         <div className="relative">
-                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-warning" />
+                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-warning-500" />
                           {booking && <div className="w-0.5 h-full absolute -left-[21px] top-6 bg-gray-200" />}
                           <div className="flex justify-between">
                             <div>
                               <p className="font-medium">火化</p>
                               <p className="text-sm text-gray-500">{cremation.furnaceName}</p>
                               {cremation.ashCollected && (
-                                <p className="text-sm text-success">
+                                <p className="text-sm text-success-600">
                                   骨灰已领取: {cremation.collectorName} ({cremation.collectorRelation})
                                 </p>
                               )}
@@ -1030,7 +1030,7 @@ const Settlement: React.FC = () => {
 
                       {storage && (
                         <div className="relative">
-                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-accent" />
+                          <div className="absolute -left-6 top-1.5 w-4 h-4 rounded-full bg-accent-600" />
                           {cremation && <div className="w-0.5 h-full absolute -left-[21px] top-6 bg-gray-200" />}
                           <div className="flex justify-between">
                             <div>
@@ -1051,7 +1051,7 @@ const Settlement: React.FC = () => {
                   {usages.length > 0 && (
                     <div className="card p-4">
                       <h4 className="font-semibold mb-3 flex items-center gap-2">
-                        <FileText size={18} className="text-primary" />
+                        <FileText size={18} className="text-primary-700" />
                         用品领用
                       </h4>
                       <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -1086,7 +1086,7 @@ const Settlement: React.FC = () => {
                   {selectedPayment && (
                     <div className="card p-4">
                       <h4 className="font-semibold mb-3 flex items-center gap-2">
-                        <Receipt size={18} className="text-primary" />
+                        <Receipt size={18} className="text-primary-700" />
                         费用结算
                       </h4>
                       <div className="p-4 rounded-lg bg-gray-50">
@@ -1097,20 +1097,20 @@ const Settlement: React.FC = () => {
                           </div>
                           {selectedPayment.subsidyAmount > 0 && (
                             <div className="flex justify-between text-sm">
-                              <span className="text-success">补贴减免</span>
-                              <span className="text-success">-{formatCurrency(selectedPayment.subsidyAmount)}</span>
+                              <span className="text-success-600">补贴减免</span>
+                              <span className="text-success-600">-{formatCurrency(selectedPayment.subsidyAmount)}</span>
                             </div>
                           )}
                           {selectedPayment.discountAmount > 0 && (
                             <div className="flex justify-between text-sm">
-                              <span className="text-warning">优惠减免</span>
-                              <span className="text-warning">-{formatCurrency(selectedPayment.discountAmount)}</span>
+                              <span className="text-warning-600">优惠减免</span>
+                              <span className="text-warning-600">-{formatCurrency(selectedPayment.discountAmount)}</span>
                             </div>
                           )}
                           <div className="border-t border-gray-200 pt-2 mt-2">
                             <div className="flex justify-between items-center">
                               <span className="font-semibold">实收金额</span>
-                              <span className="text-xl font-bold text-primary">{formatCurrency(selectedPayment.actualAmount)}</span>
+                              <span className="text-xl font-bold text-primary-700">{formatCurrency(selectedPayment.actualAmount)}</span>
                             </div>
                           </div>
                         </div>

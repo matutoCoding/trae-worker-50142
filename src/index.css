@@ -38,6 +38,10 @@
     @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
   }
 
+  .btn-outline {
+    @apply btn bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500;
+  }
+
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
   }
@@ -127,6 +131,10 @@
 
   .stat-card-value {
     @apply text-3xl font-bold text-gray-900;
+  }
+
+  .stat-card-subtitle {
+    @apply mt-1 text-xs text-gray-400;
   }
 
   .stat-card-change {

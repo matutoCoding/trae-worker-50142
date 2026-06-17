@@ -10,7 +10,7 @@ interface Column<T> {
 interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
-  rowKey: keyof T;
+  rowKey?: keyof T | string;
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
 }
@@ -18,7 +18,7 @@ interface DataTableProps<T> {
 function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
-  rowKey,
+  rowKey = 'id' as keyof T,
   onRowClick,
   emptyMessage = '暂无数据',
 }: DataTableProps<T>) {
@@ -42,9 +42,9 @@ function DataTable<T extends Record<string, unknown>>({
               </td>
             </tr>
           ) : (
-            data.map((row) => (
+            data.map((row, index) => (
               <tr
-                key={String(row[rowKey])}
+                key={row[rowKey as keyof T] ? String(row[rowKey as keyof T]) : index}
                 onClick={() => onRowClick?.(row)}
                 className={onRowClick ? 'cursor-pointer' : ''}
               >

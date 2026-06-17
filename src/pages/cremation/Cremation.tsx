@@ -8,7 +8,7 @@ import StatCard from '@/components/ui/StatCard';
 import { useAppStore } from '@/store';
 import { formatDateTime, formatDate, getNow, getToday } from '@/utils/dateUtils';
 import { generateId } from '@/utils/formatUtils';
-import { CremationSchedule, CremationFurnace, CremationStatus, FurnaceStatus } from '@/types';
+import { CremationSchedule, FurnaceStatus } from '@/types';
 
 const Cremation: React.FC = () => {
   const { cremationSchedules, furnaces, transportOrders, deceasedList, addCremationSchedule, updateCremationSchedule } = useAppStore();
@@ -133,7 +133,7 @@ const Cremation: React.FC = () => {
         return (
           <button
             onClick={() => handleStartCremation(schedule)}
-            className="flex items-center gap-1 px-3 py-1 text-xs bg-primary text-white rounded hover:bg-primary/90"
+            className="flex items-center gap-1 px-3 py-1 text-xs bg-primary-800 text-white rounded hover:bg-primary-700"
           >
             <Play size={12} />
             开始火化
@@ -143,7 +143,7 @@ const Cremation: React.FC = () => {
         return (
           <button
             onClick={() => handleCompleteCremation(schedule)}
-            className="flex items-center gap-1 px-3 py-1 text-xs bg-success text-white rounded hover:bg-success/90"
+            className="flex items-center gap-1 px-3 py-1 text-xs bg-success-600 text-white rounded hover:bg-success-700"
           >
             <Square size={12} />
             完成火化
@@ -154,7 +154,7 @@ const Cremation: React.FC = () => {
           return (
             <button
               onClick={() => handleCollectAsh(schedule)}
-              className="flex items-center gap-1 px-3 py-1 text-xs bg-accent text-white rounded hover:bg-accent/90"
+              className="flex items-center gap-1 px-3 py-1 text-xs bg-accent-600 text-white rounded hover:bg-accent-700"
             >
               <Package size={12} />
               骨灰领取
@@ -222,12 +222,12 @@ const Cremation: React.FC = () => {
       header: '骨灰领取',
       render: (row: CremationSchedule) => (
         row.ashCollected ? (
-          <div className="flex items-center gap-1 text-success">
+          <div className="flex items-center gap-1 text-success-600">
             <CheckCircle2 size={16} />
             <span className="text-sm">已领取</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1 text-warning">
+          <div className="flex items-center gap-1 text-warning-600">
             <Package size={16} />
             <span className="text-sm">待领取</span>
           </div>
@@ -243,7 +243,7 @@ const Cremation: React.FC = () => {
           {row.status === '待火化' && (
             <button
               onClick={() => handleEdit(row)}
-              className="px-3 py-1 text-xs text-primary border border-primary rounded hover:bg-primary/5"
+              className="px-3 py-1 text-xs text-primary-700 border border-primary-500 rounded hover:bg-primary-50"
             >
               编辑
             </button>
@@ -264,9 +264,9 @@ const Cremation: React.FC = () => {
 
   const getFurnaceStatusColor = (status: FurnaceStatus) => {
     switch (status) {
-      case '空闲': return 'bg-success';
-      case '使用中': return 'bg-warning';
-      case '维修中': return 'bg-danger';
+      case '空闲': return 'bg-success-500';
+      case '使用中': return 'bg-warning-500';
+      case '维修中': return 'bg-danger-500';
       default: return 'bg-gray-400';
     }
   };
@@ -329,8 +329,8 @@ const Cremation: React.FC = () => {
             <div
               key={furnace.id}
               className={`p-4 rounded-lg border-2 ${
-                furnace.status === '使用中' ? 'border-warning/30 bg-warning/5' :
-                furnace.status === '维修中' ? 'border-danger/30 bg-danger/5' :
+                furnace.status === '使用中' ? 'border-warning-500 bg-warning-50' :
+                furnace.status === '维修中' ? 'border-danger-500 bg-danger-50' :
                 'border-gray-200 bg-white'
               }`}
             >
@@ -409,7 +409,7 @@ const Cremation: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                关联订单 <span className="text-danger">*</span>
+                关联订单 <span className="text-danger-600">*</span>
               </label>
               <select
                 value={formData.orderId}
@@ -430,7 +430,7 @@ const Cremation: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                火化炉 <span className="text-danger">*</span>
+                火化炉 <span className="text-danger-600">*</span>
               </label>
               <select
                 value={formData.furnaceId}
@@ -449,7 +449,7 @@ const Cremation: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              排期时间 <span className="text-danger">*</span>
+              排期时间 <span className="text-danger-600">*</span>
             </label>
             <input
               type="datetime-local"
@@ -546,7 +546,7 @@ const Cremation: React.FC = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-warning">
+                  <div className="flex items-center gap-2 text-warning-600">
                     <AlertTriangle size={16} />
                     <span className="text-sm">骨灰尚未领取</span>
                   </div>

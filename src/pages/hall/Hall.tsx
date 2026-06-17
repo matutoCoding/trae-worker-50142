@@ -7,7 +7,7 @@ import Modal from '@/components/ui/Modal';
 import { useAppStore } from '@/store';
 import { formatDateTime, formatDate, getToday, getNow } from '@/utils/dateUtils';
 import { formatCurrency, generateId } from '@/utils/formatUtils';
-import { HallBooking, Hall } from '@/types';
+import { HallBooking } from '@/types';
 
 const Hall: React.FC = () => {
   const { halls, hallBookings, staffs, transportOrders, deceasedList, addHallBooking, updateHallBooking } = useAppStore();
