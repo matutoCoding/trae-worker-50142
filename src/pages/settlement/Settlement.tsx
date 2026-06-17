@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, FileText, Calculator, Receipt, User, Clock, DollarSign, TrendingUp, Eye, Download, Printer } from 'lucide-react';
+import { Plus, Search, FileText, Calculator, Receipt, User, Clock, DollarSign, TrendingUp, Eye, Download, Printer, Trash2, Edit2, Check } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -21,6 +21,13 @@ const Settlement: React.FC = () => {
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [newItem, setNewItem] = useState<{ name: string; type: PaymentItem['type']; quantity: number; unitPrice: number }>({
+    name: '',
+    type: '其他',
+    quantity: 1,
+    unitPrice: 0,
+  });
 
   const [formData, setFormData] = useState({
     orderId: '',
@@ -196,6 +203,8 @@ const Settlement: React.FC = () => {
       remark: '',
     });
     setSelectedOrderId('');
+    setEditingItemId(null);
+    setNewItem({ name: '', type: '其他', quantity: 1, unitPrice: 0 });
   };
 
   const toggleSubsidy = (subsidyId: string) => {
@@ -204,6 +213,37 @@ const Settlement: React.FC = () => {
       subsidyIds: prev.subsidyIds.includes(subsidyId)
         ? prev.subsidyIds.filter(id => id !== subsidyId)
         : [...prev.subsidyIds, subsidyId],
+    }));
+  };
+
+  const handleAddCustomItem = () => {
+    if (!newItem.name || newItem.quantity <= 0) return;
+    const item: PaymentItem = {
+      id: generateId(),
+      name: newItem.name,
+      type: newItem.type,
+      quantity: newItem.quantity,
+      unitPrice: newItem.unitPrice,
+      totalPrice: newItem.quantity * newItem.unitPrice,
+    };
+    setFormData(prev => ({ ...prev, items: [...prev.items, item] }));
+    setNewItem({ name: '', type: '其他', quantity: 1, unitPrice: 0 });
+  };
+
+  const handleRemoveItem = (itemId: string) => {
+    setFormData(prev => ({ ...prev, items: prev.items.filter(i => i.id !== itemId) }));
+    if (editingItemId === itemId) setEditingItemId(null);
+  };
+
+  const handleUpdateItem = (itemId: string, updates: Partial<{ name: string; type: PaymentItem['type']; quantity: number; unitPrice: number }>) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map(i => {
+        if (i.id !== itemId) return i;
+        const next = { ...i, ...updates };
+        next.totalPrice = next.quantity * next.unitPrice;
+        return next;
+      }),
     }));
   };
 
@@ -580,7 +620,12 @@ const Settlement: React.FC = () => {
           {formData.orderId && (
             <>
               <div>
-                <h4 className="font-semibold mb-3">费用明细</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold">费用明细（可调整）</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">点击数量/单价可直接编辑</span>
+                  </div>
+                </div>
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -590,26 +635,176 @@ const Settlement: React.FC = () => {
                         <th className="px-4 py-3 text-center text-sm font-medium text-gray-600">数量</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">单价</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">金额</th>
+                        <th className="px-4 py-3 text-center text-sm font-medium text-gray-600">操作</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {formData.items.map(item => (
-                        <tr key={item.id}>
-                          <td className="px-4 py-3 text-sm">{item.name}</td>
-                          <td className="px-4 py-3 text-center text-sm text-gray-500">{item.type}</td>
-                          <td className="px-4 py-3 text-center text-sm">{item.quantity}</td>
-                          <td className="px-4 py-3 text-right text-sm">{formatCurrency(item.unitPrice)}</td>
+                        <tr key={item.id} className={editingItemId === item.id ? 'bg-primary-800-50' : ''}>
+                          <td className="px-4 py-3 text-sm">
+                            {editingItemId === item.id ? (
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => handleUpdateItem(item.id, { name: e.target.value })}
+                                className="input !py-1 !text-sm"
+                              />
+                            ) : (
+                              <span>{item.name}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center text-sm text-gray-500">
+                            {editingItemId === item.id ? (
+                              <select
+                                value={item.type}
+                                onChange={(e) => handleUpdateItem(item.id, { type: e.target.value as PaymentItem['type'] })}
+                                className="input !py-1 !text-sm"
+                              >
+                                <option value="接运费">接运费</option>
+                                <option value="厅房费">厅房费</option>
+                                <option value="火化费">火化费</option>
+                                <option value="寄存费">寄存费</option>
+                                <option value="用品费">用品费</option>
+                                <option value="服务费">服务费</option>
+                                <option value="其他">其他</option>
+                              </select>
+                            ) : (
+                              item.type
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center text-sm">
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) => handleUpdateItem(item.id, { quantity: Math.max(1, Number(e.target.value)) })}
+                              className="w-20 text-center input !py-1 !text-sm inline-block"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.unitPrice}
+                              onChange={(e) => handleUpdateItem(item.id, { unitPrice: Number(e.target.value) })}
+                              className="w-24 text-right input !py-1 !text-sm inline-block"
+                            />
+                          </td>
                           <td className="px-4 py-3 text-right text-sm font-medium">{formatCurrency(item.totalPrice)}</td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              {editingItemId === item.id ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingItemId(null)}
+                                  className="p-1.5 text-success-600 hover:bg-success-50 rounded"
+                                  title="完成编辑"
+                                >
+                                  <Check size={14} />
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingItemId(item.id)}
+                                  className="p-1.5 text-primary-700 hover:bg-primary-800-50 rounded"
+                                  title="编辑名称"
+                                >
+                                  <Edit2 size={14} />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveItem(item.id)}
+                                className="p-1.5 text-danger-600 hover:bg-danger-50 rounded"
+                                title="删除此项"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
+                      {formData.items.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-4 py-6 text-center text-sm text-gray-400">
+                            暂无费用项，请先选择订单或手动添加
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                     <tfoot className="bg-gray-50">
                       <tr>
                         <td colSpan={4} className="px-4 py-3 text-right font-medium">合计：</td>
                         <td className="px-4 py-3 text-right text-lg font-bold">{formatCurrency(totalAmount)}</td>
+                        <td></td>
                       </tr>
                     </tfoot>
                   </table>
+                </div>
+
+                <div className="mt-4 p-4 rounded-lg border border-dashed border-gray-300 bg-gray-50">
+                  <h5 className="text-sm font-medium mb-3 flex items-center gap-1 text-gray-700">
+                    <Plus size={14} className="text-primary-700" />
+                    添加自定义费用项
+                  </h5>
+                  <div className="grid grid-cols-12 gap-2">
+                    <div className="col-span-4">
+                      <input
+                        type="text"
+                        placeholder="项目名称，如：鲜花布置"
+                        value={newItem.name}
+                        onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                        className="input !py-2 !text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <select
+                        value={newItem.type}
+                        onChange={(e) => setNewItem(prev => ({ ...prev, type: e.target.value as PaymentItem['type'] }))}
+                        className="input !py-2 !text-sm"
+                      >
+                        <option value="接运费">接运费</option>
+                        <option value="厅房费">厅房费</option>
+                        <option value="火化费">火化费</option>
+                        <option value="寄存费">寄存费</option>
+                        <option value="用品费">用品费</option>
+                        <option value="服务费">服务费</option>
+                        <option value="其他">其他</option>
+                      </select>
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="数量"
+                        value={newItem.quantity}
+                        onChange={(e) => setNewItem(prev => ({ ...prev, quantity: Math.max(1, Number(e.target.value)) }))}
+                        className="input !py-2 !text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="单价"
+                        value={newItem.unitPrice}
+                        onChange={(e) => setNewItem(prev => ({ ...prev, unitPrice: Number(e.target.value) }))}
+                        className="input !py-2 !text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleAddCustomItem}
+                        disabled={!newItem.name}
+                        className="btn-primary w-full !py-2 !text-sm disabled:opacity-50"
+                      >
+                        + 添加
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

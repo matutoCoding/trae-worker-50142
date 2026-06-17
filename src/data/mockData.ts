@@ -221,8 +221,8 @@ export const mockHallBookings: HallBooking[] = [
 
 export const mockFurnaces: CremationFurnace[] = [
   { id: 'cf1', name: '一号炉', type: '普通炉', status: '空闲', lastMaintenanceDate: '2026-06-01', totalUsageCount: 1256 },
-  { id: 'cf2', name: '二号炉', type: '豪华炉', status: '使用中', lastMaintenanceDate: '2026-06-05', totalUsageCount: 987 },
-  { id: 'cf3', name: '三号炉', type: '拣灰炉', status: '空闲', lastMaintenanceDate: '2026-06-10', totalUsageCount: 654 },
+  { id: 'cf2', name: '二号炉', type: '豪华炉', status: '空闲', lastMaintenanceDate: '2026-06-05', totalUsageCount: 987 },
+  { id: 'cf3', name: '三号炉', type: '拣灰炉', status: '使用中', lastMaintenanceDate: '2026-06-10', totalUsageCount: 654 },
   { id: 'cf4', name: '四号炉', type: '普通炉', status: '维修中', lastMaintenanceDate: '2026-05-20', totalUsageCount: 2100 },
   { id: 'cf5', name: '五号炉', type: '豪华炉', status: '空闲', lastMaintenanceDate: '2026-06-12', totalUsageCount: 543 },
 ];
@@ -287,11 +287,11 @@ export const mockCremationSchedules: CremationSchedule[] = [
   },
 ];
 
-export const mockStorageUnits: StorageUnit[] = (() => {
+const buildStorageUnits = (ashStorages: AshStorage[]): StorageUnit[] => {
   const units: StorageUnit[] = [];
   const areas = ['A区', 'B区', 'C区', 'D区'];
   const types: StorageUnit['type'][] = ['普通格', '中档格', '高档格', '家族格'];
-  const statuses: StorageUnit['status'][] = ['空闲', '已占用', '空闲', '空闲', '已占用', '维修中', '已预留', '空闲'];
+  const statuses: StorageUnit['status'][] = ['空闲', '空闲', '空闲', '空闲', '空闲', '空闲', '空闲', '维修中'];
   
   let id = 1;
   areas.forEach((area, areaIdx) => {
@@ -318,8 +318,39 @@ export const mockStorageUnits: StorageUnit[] = (() => {
       }
     }
   });
+  
+  const occupiedUnitIds: Record<string, { location: string; area: string; row: number; col: number; level: number }> = {
+    'u15': { location: 'A区2排3列5层', area: 'A区', row: 2, col: 3, level: 5 },
+    'u28': { location: 'A区3排3列3层', area: 'A区', row: 3, col: 3, level: 3 },
+    'u156': { location: 'B区2排1列1层', area: 'B区', row: 2, col: 1, level: 1 },
+    'u567': { location: 'C区3排7列2层', area: 'C区', row: 3, col: 7, level: 2 },
+  };
+  
+  units.forEach(unit => {
+    const override = occupiedUnitIds[unit.id];
+    if (override) {
+      unit.location = override.location;
+      unit.area = override.area;
+      unit.row = override.row;
+      unit.col = override.col;
+      unit.level = override.level;
+    }
+  });
+  
+  ashStorages.forEach(storage => {
+    const unit = units.find(u => u.id === storage.unitId);
+    if (unit) {
+      if (storage.status !== '已取出') {
+        unit.status = '已占用';
+      }
+      if (storage.unitLocation && unit.location !== storage.unitLocation) {
+        unit.location = storage.unitLocation;
+      }
+    }
+  });
+  
   return units;
-})();
+};
 
 export const mockAshStorages: AshStorage[] = [
   {
@@ -374,6 +405,8 @@ export const mockAshStorages: AshStorage[] = [
     remark: '高档格，三年期',
   },
 ];
+
+export const mockStorageUnits: StorageUnit[] = buildStorageUnits(mockAshStorages);
 
 export const mockSupplies: SuppliesItem[] = [
   { id: 'sup1', name: '男式寿衣（高档）', category: '寿衣', specification: '七件套，藏青色', stock: 15, minStock: 5, price: 2800, cost: 1200, unit: '套', supplier: '福寿祥', lastPurchaseDate: '2026-05-10' },

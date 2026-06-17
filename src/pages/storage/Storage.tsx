@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, AlertTriangle, RefreshCw, User, Building, Grid, List, Bell, XCircle } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
@@ -24,6 +24,24 @@ const Storage: React.FC = () => {
   const [selectedStorage, setSelectedStorage] = useState<AshStorage | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<StorageUnit | null>(null);
   const [renewYears, setRenewYears] = useState(1);
+
+  useEffect(() => {
+    const expectedOccupied = new Set<string>();
+    ashStorages.forEach(storage => {
+      if (storage.status !== '已取出') {
+        expectedOccupied.add(storage.unitId);
+      }
+    });
+
+    storageUnits.forEach(unit => {
+      if (unit.status === '维修中' || unit.status === '已预留') return;
+      const shouldBeOccupied = expectedOccupied.has(unit.id);
+      const expected = shouldBeOccupied ? '已占用' : '空闲';
+      if (unit.status !== expected) {
+        updateStorageUnit(unit.id, { status: expected });
+      }
+    });
+  }, []);
 
   const [formData, setFormData] = useState({
     orderId: '',
@@ -379,7 +397,7 @@ const Storage: React.FC = () => {
             >
               <option value="all">全部区域</option>
               {areas.map(area => (
-                <option key={area} value={area}>{area}区</option>
+                <option key={area} value={area}>{area}</option>
               ))}
             </select>
             {activeTab === 'units' && (
@@ -408,7 +426,7 @@ const Storage: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 mb-6">
               {areas.map(area => (
                 <div key={area} className="col-span-full mb-4">
-                  <h4 className="font-semibold text-gray-700 mb-2">{area}区</h4>
+                  <h4 className="font-semibold text-gray-700 mb-2">{area}</h4>
                   <div className="grid grid-cols-5 sm:grid-cols-10 md:grid-cols-15 lg:grid-cols-20 gap-1">
                     {filteredUnits.filter(u => u.area === area).map(unit => (
                       <div

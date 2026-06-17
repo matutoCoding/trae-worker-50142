@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Flame, AlertTriangle, CheckCircle2, Package, Calendar, User, Play, Square } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
@@ -19,6 +19,7 @@ const Cremation: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<CremationSchedule | null>(null);
+  const [submitError, setSubmitError] = useState<string>('');
 
   const [formData, setFormData] = useState({
     orderId: '',
@@ -26,6 +27,28 @@ const Cremation: React.FC = () => {
     scheduledTime: '',
     remark: '',
   });
+
+  useEffect(() => {
+    cremationSchedules.forEach(schedule => {
+      const furnace = furnaces.find(f => f.id === schedule.furnaceId);
+      if (!furnace) return;
+      if (furnace.status === '维修中') return;
+      const target: FurnaceStatus = schedule.status === '火化中' ? '使用中' : '空闲';
+      if (furnace.status !== target) {
+        updateFurnace(furnace.id, { status: target });
+      }
+    });
+    furnaces.forEach(furnace => {
+      if (furnace.status === '维修中') return;
+      const active = cremationSchedules.find(
+        s => s.furnaceId === furnace.id && s.status === '火化中'
+      );
+      const expected: FurnaceStatus = active ? '使用中' : '空闲';
+      if (furnace.status !== expected) {
+        updateFurnace(furnace.id, { status: expected });
+      }
+    });
+  }, []);
 
   const today = getToday();
   const todaySchedules = cremationSchedules.filter(s => s.scheduledTime.startsWith(today));
@@ -50,9 +73,30 @@ const Cremation: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
     const furnace = furnaces.find(f => f.id === formData.furnaceId);
     const order = transportOrders.find(o => o.id === formData.orderId);
     const deceased = deceasedList.find(d => d.id === order?.deceasedId);
+    
+    if (!formData.scheduledTime || !formData.furnaceId) {
+      setSubmitError('请填写完整的排期时间和火化炉');
+      return;
+    }
+
+    const timeWindowMs = 2 * 60 * 60 * 1000;
+    const targetTime = new Date(formData.scheduledTime).getTime();
+    const conflict = cremationSchedules.find(s => {
+      if (selectedSchedule && s.id === selectedSchedule.id) return false;
+      if (s.furnaceId !== formData.furnaceId) return false;
+      if (s.status === '已取消') return false;
+      const sTime = new Date(s.scheduledTime).getTime();
+      return Math.abs(sTime - targetTime) < timeWindowMs;
+    });
+
+    if (conflict) {
+      setSubmitError(`同一火化炉已有相近时间排程：${conflict.deceasedName} ${formatDateTime(conflict.scheduledTime)}（${conflict.status}），请更换炉子或时间`);
+      return;
+    }
     
     if (selectedSchedule) {
       updateCremationSchedule(selectedSchedule.id, {
@@ -83,9 +127,17 @@ const Cremation: React.FC = () => {
       scheduledTime: '',
       remark: '',
     });
+    setSubmitError('');
   };
 
   const handleStartCremation = (schedule: CremationSchedule) => {
+    const inProgress = cremationSchedules.find(
+      s => s.furnaceId === schedule.furnaceId && s.status === '火化中' && s.id !== schedule.id
+    );
+    if (inProgress) {
+      alert(`炉子「${schedule.furnaceName}」当前正在火化：${inProgress.deceasedName}，请先完成或取消`);
+      return;
+    }
     updateCremationSchedule(schedule.id, {
       status: '火化中',
       startTime: getNow(),
@@ -319,27 +371,51 @@ const Cremation: React.FC = () => {
       <div className="card p-4">
         <h3 className="font-semibold text-gray-800 mb-4">火化炉状态</h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {furnaces.map(furnace => (
-            <div
-              key={furnace.id}
-              className={`p-4 rounded-lg border-2 ${
-                furnace.status === '使用中' ? 'border-warning-500 bg-warning-50' :
-                furnace.status === '维修中' ? 'border-danger-500 bg-danger-50' :
-                'border-gray-200 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold">{furnace.name}</span>
-                <div className={`w-3 h-3 rounded-full ${getFurnaceStatusColor(furnace.status)}`} />
+          {furnaces.map(furnace => {
+            const activeSchedule = cremationSchedules.find(
+              s => s.furnaceId === furnace.id && s.status === '火化中'
+            );
+            const pendingSchedule = cremationSchedules.find(
+              s => s.furnaceId === furnace.id && s.status === '待火化'
+            );
+            return (
+              <div
+                key={furnace.id}
+                className={`p-4 rounded-lg border-2 ${
+                  furnace.status === '使用中' ? 'border-warning-500 bg-warning-50' :
+                  furnace.status === '维修中' ? 'border-danger-500 bg-danger-50' :
+                  'border-gray-200 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold">{furnace.name}</span>
+                  <div className={`w-3 h-3 rounded-full ${getFurnaceStatusColor(furnace.status)}`} />
+                </div>
+                <p className="text-sm text-gray-500">{furnace.type}</p>
+                {activeSchedule && (
+                  <div className="mt-2 p-2 rounded bg-warning-100 border border-warning-200">
+                    <div className="flex items-center gap-1 text-xs text-warning-700">
+                      <Flame size={12} />
+                      <span className="font-medium">正在火化：{activeSchedule.deceasedName}</span>
+                    </div>
+                  </div>
+                )}
+                {!activeSchedule && pendingSchedule && furnace.status !== '维修中' && (
+                  <div className="mt-2 p-2 rounded bg-blue-50 border border-blue-200">
+                    <div className="flex items-center gap-1 text-xs text-blue-700">
+                      <Calendar size={12} />
+                      <span>待火化：{pendingSchedule.deceasedName}</span>
+                    </div>
+                  </div>
+                )}
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">累计使用: {furnace.totalUsageCount}次</p>
+                  <p className="text-xs text-gray-400">上次维护: {formatDate(furnace.lastMaintenanceDate)}</p>
+                </div>
+                <StatusBadge status={furnace.status} className="mt-2" />
               </div>
-              <p className="text-sm text-gray-500">{furnace.type}</p>
-              <div className="mt-2 pt-2 border-t border-gray-100">
-                <p className="text-xs text-gray-400">累计使用: {furnace.totalUsageCount}次</p>
-                <p className="text-xs text-gray-400">上次维护: {formatDate(furnace.lastMaintenanceDate)}</p>
-              </div>
-              <StatusBadge status={furnace.status} className="mt-2" />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -400,6 +476,12 @@ const Cremation: React.FC = () => {
         size="md"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          {submitError && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-danger-50 border border-danger-500 text-danger-700">
+              <AlertTriangle size={18} className="mt-0.5 flex-shrink-0" />
+              <p className="text-sm">{submitError}</p>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
