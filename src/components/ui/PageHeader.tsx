@@ -12,7 +12,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   action?: ActionButton;
-  actions?: ActionButton | ActionButton[];
+  actions?: ActionButton | ActionButton[] | React.ReactNode;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action, actions }) => {
@@ -22,13 +22,23 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action, action
     allActions.push(action);
   }
   
+  const isActionButton = (val: unknown): val is ActionButton => {
+    return typeof val === 'object' && val !== null && 'label' in val && 'onClick' in val;
+  };
+
+  const isActionButtonArray = (val: unknown): val is ActionButton[] => {
+    return Array.isArray(val) && val.every(isActionButton);
+  };
+
   if (actions) {
-    if (Array.isArray(actions)) {
+    if (isActionButtonArray(actions)) {
       allActions.push(...actions);
-    } else {
+    } else if (isActionButton(actions)) {
       allActions.push(actions);
     }
   }
+
+  const hasReactNodeActions = actions && !isActionButton(actions) && !isActionButtonArray(actions);
 
   const getVariantClass = (variant?: ActionButton['variant']) => {
     switch (variant) {
@@ -59,6 +69,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action, action
           ))}
         </div>
       )}
+      {hasReactNodeActions && actions}
     </div>
   );
 };

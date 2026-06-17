@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, FileText, Calculator, Receipt, User, Clock, CheckCircle, AlertTriangle, DollarSign, TrendingUp, Eye, Download, Printer } from 'lucide-react';
+import { Plus, Search, FileText, Calculator, Receipt, User, Clock, DollarSign, TrendingUp, Eye, Download, Printer } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -11,7 +11,7 @@ import { formatCurrency, generateId } from '@/utils/formatUtils';
 import { Payment, PaymentItem } from '@/types';
 
 const Settlement: React.FC = () => {
-  const { payments, subsidies, transportOrders, deceasedList, hallBookings, cremationSchedules, ashStorages, suppliesUsages, addPayment, staffs, currentUser } = useAppStore();
+  const { payments, subsidies, transportOrders, deceasedList, hallBookings, cremationSchedules, ashStorages, suppliesUsages, addPayment, currentUser } = useAppStore();
   
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -160,7 +160,7 @@ const Settlement: React.FC = () => {
       const subsidy = subsidies.find(s => s.id === id);
       return sum + (subsidy?.amount || 0);
     }, 0);
-    const actualAmount = totalAmount - subsidyAmount - formData.discountAmount;
+    const actualAmount = Math.max(0, totalAmount - subsidyAmount - formData.discountAmount);
 
     const newPayment: Payment = {
       id: generateId(),

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Flame, Clock, AlertTriangle, CheckCircle2, Package, Calendar, User, Play, Square } from 'lucide-react';
+import { Plus, Search, Flame, AlertTriangle, CheckCircle2, Package, Calendar, User, Play, Square } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -11,7 +11,7 @@ import { generateId } from '@/utils/formatUtils';
 import { CremationSchedule, FurnaceStatus } from '@/types';
 
 const Cremation: React.FC = () => {
-  const { cremationSchedules, furnaces, transportOrders, deceasedList, addCremationSchedule, updateCremationSchedule } = useAppStore();
+  const { cremationSchedules, furnaces, transportOrders, deceasedList, addCremationSchedule, updateCremationSchedule, updateFurnace } = useAppStore();
   
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -90,10 +90,7 @@ const Cremation: React.FC = () => {
       status: '火化中',
       startTime: getNow(),
     });
-    const furnace = furnaces.find(f => f.id === schedule.furnaceId);
-    if (furnace) {
-      furnace.status = '使用中';
-    }
+    updateFurnace(schedule.furnaceId, { status: '使用中' });
   };
 
   const handleCompleteCremation = (schedule: CremationSchedule) => {
@@ -101,10 +98,7 @@ const Cremation: React.FC = () => {
       status: '已完成',
       endTime: getNow(),
     });
-    const furnace = furnaces.find(f => f.id === schedule.furnaceId);
-    if (furnace) {
-      furnace.status = '空闲';
-    }
+    updateFurnace(schedule.furnaceId, { status: '空闲' });
   };
 
   const handleCollectAsh = (schedule: CremationSchedule) => {

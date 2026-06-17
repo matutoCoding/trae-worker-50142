@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Search, AlertTriangle, Calendar, Clock, RefreshCw, FileText, User, Building, Grid, List, Bell, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Search, AlertTriangle, RefreshCw, User, Building, Grid, List, Bell, XCircle } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';
 import Modal from '@/components/ui/Modal';
 import StatCard from '@/components/ui/StatCard';
 import { useAppStore } from '@/store';
-import { formatDateTime, formatDate, getNow, getToday, isExpiringSoon, addYears } from '@/utils/dateUtils';
+import { formatDate, getNow, getToday, isExpiringSoon, addYears } from '@/utils/dateUtils';
 import { formatCurrency, generateId } from '@/utils/formatUtils';
-import { AshStorage, StorageUnit, StorageStatus, UnitStatus, UnitType } from '@/types';
+import { AshStorage, StorageUnit, UnitType } from '@/types';
 
 const Storage: React.FC = () => {
-  const { ashStorages, storageUnits, transportOrders, deceasedList, addAshStorage, updateAshStorage } = useAppStore();
+  const { ashStorages, storageUnits, transportOrders, deceasedList, addAshStorage, updateAshStorage, updateStorageUnit } = useAppStore();
   
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -90,7 +90,7 @@ const Storage: React.FC = () => {
       };
       addAshStorage(newStorage);
       if (unit) {
-        unit.status = '已占用';
+        updateStorageUnit(unit.id, { status: '已占用' });
       }
     }
     
@@ -112,7 +112,6 @@ const Storage: React.FC = () => {
   const handleRenew = () => {
     if (!selectedStorage) return;
     
-    const unit = storageUnits.find(u => u.id === selectedStorage.unitId);
     const newEndDate = addYears(selectedStorage.endDate, renewYears);
     
     updateAshStorage(selectedStorage.id, {
@@ -131,32 +130,7 @@ const Storage: React.FC = () => {
     updateAshStorage(storage.id, {
       status: '已取出',
     });
-    const unit = storageUnits.find(u => u.id === storage.unitId);
-    if (unit) {
-      unit.status = '空闲';
-    }
-  };
-
-  const handleEdit = (storage: AshStorage) => {
-    setSelectedStorage(storage);
-    setFormData({
-      orderId: storage.orderId,
-      unitId: storage.unitId,
-      startDate: storage.startDate,
-      endDate: storage.endDate,
-      remark: storage.remark || '',
-    });
-    setShowModal(true);
-  };
-
-  const getUnitStatusColor = (status: UnitStatus) => {
-    switch (status) {
-      case '空闲': return 'bg-success-500';
-      case '已占用': return 'bg-primary-500';
-      case '维修中': return 'bg-danger-500';
-      case '已预留': return 'bg-warning-500';
-      default: return 'bg-gray-400';
-    }
+    updateStorageUnit(storage.unitId, { status: '空闲' });
   };
 
   const storageColumns = [
@@ -265,54 +239,6 @@ const Storage: React.FC = () => {
           </button>
         </div>
       ),
-    },
-  ];
-
-  const unitColumns = [
-    {
-      key: 'location',
-      header: '格位位置',
-      render: (row: StorageUnit) => (
-        <div>
-          <p className="font-medium">{row.location}</p>
-          <p className="text-xs text-gray-500">{row.area}区 {row.row}排 {row.col}列 {row.level}层</p>
-        </div>
-      ),
-    },
-    {
-      key: 'type',
-      header: '格位类型',
-      render: (row: StorageUnit) => row.type,
-    },
-    {
-      key: 'annualFee',
-      header: '年管理费',
-      render: (row: StorageUnit) => formatCurrency(row.annualFee),
-    },
-    {
-      key: 'status',
-      header: '状态',
-      render: (row: StorageUnit) => (
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${getUnitStatusColor(row.status)}`} />
-          <StatusBadge status={row.status} />
-        </div>
-      ),
-    },
-    {
-      key: 'currentUser',
-      header: '当前使用人',
-      render: (row: StorageUnit) => {
-        const storage = ashStorages.find(s => s.unitId === row.id && (s.status === '有效' || s.status === '即将到期'));
-        return storage ? (
-          <div>
-            <p className="font-medium">{storage.deceasedName}</p>
-            <p className="text-xs text-gray-500">至 {formatDate(storage.endDate)}</p>
-          </div>
-        ) : (
-          <span className="text-gray-400">-</span>
-        );
-      },
     },
   ];
 

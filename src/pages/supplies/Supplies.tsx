@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Package, AlertTriangle, TrendingDown, TrendingUp, ShoppingCart, FileText } from 'lucide-react';
+import { Search, Filter, Package, AlertTriangle, TrendingDown, TrendingUp, ShoppingCart } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
-import StatusBadge from '@/components/ui/StatusBadge';
 import Modal from '@/components/ui/Modal';
 import { useAppStore } from '@/store';
 import { formatCurrency, generateId } from '@/utils/formatUtils';
-import { formatDate, getNow, getToday } from '@/utils/dateUtils';
+import { formatDate, getNow } from '@/utils/dateUtils';
 import { SuppliesItem, SuppliesUsage } from '@/types';
 
 const Supplies: React.FC = () => {
@@ -49,9 +48,6 @@ const Supplies: React.FC = () => {
     e.preventDefault();
     const item = supplies.find(s => s.id === usageForm.itemId);
     if (!item) return;
-
-    const order = transportOrders.find(o => o.id === usageForm.orderId);
-    const deceased = deceasedList.find(d => d.id === order?.deceasedId);
 
     const newUsage: SuppliesUsage = {
       id: generateId(),

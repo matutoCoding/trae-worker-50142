@@ -15,8 +15,7 @@ import {
   Subsidy,
   ScheduleItem,
 } from '@/types';
-import { generateOrderNo, getToday, addDays, addYears, getNow } from '@/utils/dateUtils';
-import { generateId } from '@/utils/formatUtils';
+import { generateOrderNo, getToday, addDays, addYears } from '@/utils/dateUtils';
 
 export const mockStaffs: Staff[] = [
   { id: 's1', name: '张建国', role: '管理员', phone: '13800138001', status: '在岗' },

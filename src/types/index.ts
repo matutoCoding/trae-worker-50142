@@ -254,8 +254,10 @@ export interface AppActions {
   updateHallBooking: (id: string, updates: Partial<HallBooking>) => void;
   addCremationSchedule: (schedule: CremationSchedule) => void;
   updateCremationSchedule: (id: string, updates: Partial<CremationSchedule>) => void;
+  updateFurnace: (id: string, updates: Partial<CremationFurnace>) => void;
   addAshStorage: (storage: AshStorage) => void;
   updateAshStorage: (id: string, updates: Partial<AshStorage>) => void;
+  updateStorageUnit: (id: string, updates: Partial<StorageUnit>) => void;
   updateSuppliesStock: (id: string, quantity: number) => void;
   addSuppliesUsage: (usage: SuppliesUsage) => void;
   addPayment: (payment: Payment) => void;

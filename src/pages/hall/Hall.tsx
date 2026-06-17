@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Building2, Users, Clock, MapPin, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, Filter, Users, Clock, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';
 import Modal from '@/components/ui/Modal';
 import { useAppStore } from '@/store';
-import { formatDateTime, formatDate, getToday, getNow } from '@/utils/dateUtils';
+import { formatDateTime, getToday } from '@/utils/dateUtils';
 import { formatCurrency, generateId } from '@/utils/formatUtils';
 import { HallBooking } from '@/types';
 
@@ -143,7 +143,6 @@ const Hall: React.FC = () => {
           <button
             onClick={() => {
               setSelectedBooking(row);
-              const order = transportOrders.find(o => o.id === row.orderId);
               setFormData({
                 orderId: row.orderId,
                 hallId: row.hallId,

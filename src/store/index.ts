@@ -50,6 +50,13 @@ export const useAppStore = create<AppStore>()(
           ),
         })),
       
+      updateFurnace: (id, updates) =>
+        set((state) => ({
+          furnaces: state.furnaces.map((f) =>
+            f.id === id ? { ...f, ...updates } : f
+          ),
+        })),
+      
       addAshStorage: (storage) =>
         set((state) => ({
           ashStorages: [storage, ...state.ashStorages],
@@ -59,6 +66,13 @@ export const useAppStore = create<AppStore>()(
         set((state) => ({
           ashStorages: state.ashStorages.map((s) =>
             s.id === id ? { ...s, ...updates } : s
+          ),
+        })),
+      
+      updateStorageUnit: (id, updates) =>
+        set((state) => ({
+          storageUnits: state.storageUnits.map((u) =>
+            u.id === id ? { ...u, ...updates } : u
           ),
         })),
       

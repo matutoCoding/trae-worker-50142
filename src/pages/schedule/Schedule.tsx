@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, Calendar, Clock, User, Users, ChevronLeft, ChevronRight, Mic2 } from 'lucide-react';
+import { User, ChevronLeft, ChevronRight } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
-import StatusBadge from '@/components/ui/StatusBadge';
 import Modal from '@/components/ui/Modal';
 import { useAppStore } from '@/store';
-import { formatDate, formatTime, getWeekDates, getToday, addDays, getNow } from '@/utils/dateUtils';
+import { formatDate, formatTime, getWeekDates, getToday, addDays } from '@/utils/dateUtils';
 import { generateId } from '@/utils/formatUtils';
 import { ScheduleItem } from '@/types';
 
@@ -27,7 +26,6 @@ const Schedule: React.FC = () => {
   });
 
   const weekDates = getWeekDates(currentDate);
-  const hosts = staffs.filter(s => s.role === '司仪' && s.status === '在岗');
   const ritualStaff = staffs.filter(s => (s.role === '司仪' || s.role === '礼仪师') && s.status === '在岗');
 
   const weekSchedules = schedules.filter(s => 

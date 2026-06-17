@@ -3,7 +3,6 @@ import {
   Truck,
   Building2,
   Flame,
-  Archive,
   AlertTriangle,
   Clock,
   Users,
@@ -185,7 +184,7 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="厅房使用率"
-          value={halls.length > 0 ? `${Math.round((halls.filter(h => h.status === '使用中' || h.status === '已预约').length / halls.length * 100)}%` : '0%'}
+          value={halls.length > 0 ? `${Math.round(halls.filter(h => h.status === '使用中' || h.status === '已预约').length / halls.length * 100)}%` : '0%'}
           icon={Building2}
           color="green"
           subtitle={`共 ${halls.length} 个厅房`}
@@ -263,7 +262,7 @@ const Dashboard: React.FC = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {serviceTypeData.map((entry, index) => (
+                {serviceTypeData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

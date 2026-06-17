@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Eye, Edit, Truck, MapPin, Clock, User, Phone, FileText } from 'lucide-react';
+import { Search, Filter, Eye, Truck, MapPin, Clock, User, FileText } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import StatusBadge from '@/components/ui/StatusBadge';

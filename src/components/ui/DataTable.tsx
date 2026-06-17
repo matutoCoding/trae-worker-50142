@@ -15,7 +15,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-function DataTable<T extends Record<string, unknown>>({
+function DataTable<T extends object>({
   columns,
   data,
   rowKey = 'id' as keyof T,
@@ -44,13 +44,13 @@ function DataTable<T extends Record<string, unknown>>({
           ) : (
             data.map((row, index) => (
               <tr
-                key={row[rowKey as keyof T] ? String(row[rowKey as keyof T]) : index}
+                key={(row as Record<string, unknown>)[rowKey as string] ? String((row as Record<string, unknown>)[rowKey as string]) : index}
                 onClick={() => onRowClick?.(row)}
                 className={onRowClick ? 'cursor-pointer' : ''}
               >
                 {columns.map((col) => (
                   <td key={String(col.key)}>
-                    {col.render ? col.render(row) : String(row[col.key as keyof T] ?? '')}
+                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key as string] ?? '')}
                   </td>
                 ))}
               </tr>
